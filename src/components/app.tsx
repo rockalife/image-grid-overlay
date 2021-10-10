@@ -1,27 +1,25 @@
 import type { ReactElement } from "react";
 import { useState } from "react";
+import { ImageUploader } from "./imageUploader";
 import { Canvas } from "./canvas";
 import type { Config } from "../types";
 import { Controls, defaultControls } from "./controls";
 
 export function App() {
-  const [clicked, setClicked] = useState(true);
+  const [imageUrl, setImageUrl] = useState<string | null>(null);
   const [controls, setControls] = useState<Config>(defaultControls);
 
+  console.log(imageUrl);
   console.log(controls);
 
   return (
     <div className="app-container">
-      {clicked && (
+      {!imageUrl && <ImageUploader onImageUpload={setImageUrl} />}
+      {imageUrl && (
         <>
           <Controls onChange={setControls} />
-          <Canvas config={controls} />
+          <Canvas config={controls} bgImageUrl={imageUrl} />
         </>
-      )}
-      {!clicked && (
-        <div className="initial-upload">
-          <button onClick={() => setClicked(true)}>upload</button>
-        </div>
       )}
     </div>
   );

@@ -2,14 +2,20 @@ import { useEffect, useRef } from "react";
 import { Config } from "../types";
 
 interface CanvasProps {
+  bgImageUrl: string;
   config: Config;
 }
 
-export function Canvas({ config }: CanvasProps) {
+export function Canvas({ bgImageUrl, config }: CanvasProps) {
+  const imgRef = useRef<HTMLImageElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
-    canvasRef.current && drawGrid(canvasRef.current, config);
+    console.log(imgRef.current);
+
+    canvasRef.current &&
+      imgRef.current &&
+      drawGrid(canvasRef.current, config, imgRef.current);
   }, [config]);
 
   return (
@@ -20,11 +26,16 @@ export function Canvas({ config }: CanvasProps) {
         width={config.imageWidth}
         height={config.imageHeight}
       />
+      <img ref={imgRef} src={bgImageUrl} />
     </div>
   );
 }
 
-function drawGrid(canvas: HTMLCanvasElement, config: Config): void {
+function drawGrid(
+  canvas: HTMLCanvasElement,
+  config: Config,
+  bgImage: HTMLImageElement
+): void {
   var ctx = canvas.getContext("2d");
   const w = canvas.width;
   const h = canvas.height;
@@ -41,6 +52,7 @@ function drawGrid(canvas: HTMLCanvasElement, config: Config): void {
   ctx.clearRect(0, 0, w, h);
 
   // bg img
+  ctx.drawImage(bgImage, 0, 0);
 
   // ctx.fillStyle = "blue";
   // ctx.fillRect(0, 0, w, h);

@@ -4,10 +4,27 @@
   box-sizing: border-box;
 }
 
+html {
+  --primary-color: #ccc;
+}
+
 body {
   margin: 0;
   padding: 0;
-  background: #ccc;
+  /* background: #ccc; */
+}
+
+/* image uploader */
+
+.image-uploader-wrapper {
+  display: grid;
+  place-items: center;
+  width: 100vw;
+  height: 100vh;
+}
+.image-uploader-inner {
+  padding: 50px;
+  background-color: var(--primary-color);
 }
 
 /* layout */
@@ -50,6 +67,9 @@ body {
 /* canvas */
 .canvas-wrapper {
   padding: 20px;
+}
+.canvas-wrapper img {
+  display: none;
 }
 #canvas {
   border: 2px dashed white;
