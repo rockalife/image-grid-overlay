@@ -2,10 +2,10 @@
   "scripts": {
     "build": "npm run clean:dist && npm run build:static && npm run esbuild:prod",
     "build:dev": "npm run clean:dist && npm run build:static && npm run esbuild:dev",
-    "esbuild:dev": "esbuild src/index.tsx --bundle --inject:./react-shim.js --outfile=dist/scripts.js --watch",
-    "esbuild:prod": "esbuild src/index.tsx --bundle --minify --inject:./react-shim.js --outfile=dist/scripts.js",
-    "build:static": "cp src/index.html src/styles.css dist",
-    "clean:dist": "rm -rf dist && mkdir dist"
+    "esbuild:dev": "esbuild src/index.tsx --bundle --inject:./react-shim.js --outfile=docs/scripts.js --watch",
+    "esbuild:prod": "esbuild src/index.tsx --bundle --minify --inject:./react-shim.js --outfile=docs/scripts.js",
+    "build:static": "cp src/index.html src/styles.css docs",
+    "clean:dist": "rm -rf docs && mkdir docs"
   },
   "dependencies": {
     "react": "^17.0.2",
