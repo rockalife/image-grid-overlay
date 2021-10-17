@@ -1,46 +1,40 @@
 import { useEffect, useRef } from "react";
-import { Config } from "../types";
+import { Settings, ImageInfo } from "../types";
 
 interface CanvasProps {
-  bgImageUrl: string;
-  config: Config;
+  bgImage: ImageInfo;
+  settings: Settings;
 }
 
-export function Canvas({ bgImageUrl, config }: CanvasProps) {
-  const imgRef = useRef<HTMLImageElement>(null);
+export function Canvas({ bgImage, settings }: CanvasProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
-    console.log(imgRef.current);
-
-    canvasRef.current &&
-      imgRef.current &&
-      drawGrid(canvasRef.current, config, imgRef.current);
-  }, [config]);
+    canvasRef.current && drawGrid(canvasRef.current, settings, bgImage.bitmap);
+  }, [settings]);
 
   return (
     <div className="canvas-wrapper">
       <canvas
         id="canvas"
         ref={canvasRef}
-        width={config.imageWidth}
-        height={config.imageHeight}
+        width={settings.imageWidth}
+        height={settings.imageHeight}
       />
-      <img ref={imgRef} src={bgImageUrl} />
     </div>
   );
 }
 
-function drawGrid(
+async function drawGrid(
   canvas: HTMLCanvasElement,
-  config: Config,
-  bgImage: HTMLImageElement
-): void {
+  settings: Settings,
+  bgImageBitmap: ImageBitmap
+): Promise<void> {
   var ctx = canvas.getContext("2d");
   const w = canvas.width;
   const h = canvas.height;
-  const sliceX = (w / config.patternWidth) * config.pageWidth;
-  const sliceY = (h / config.patternHeight) * config.pageHeight;
+  const sliceX = (w / settings.patternWidth) * settings.pageWidth;
+  const sliceY = (h / settings.patternHeight) * settings.pageHeight;
 
   console.log(w, h);
   console.log(sliceX, sliceY);
@@ -52,21 +46,17 @@ function drawGrid(
   ctx.clearRect(0, 0, w, h);
 
   // bg img
-  ctx.drawImage(bgImage, 0, 0);
 
-  // ctx.fillStyle = "blue";
-  // ctx.fillRect(0, 0, w, h);
+  ctx.drawImage(bgImageBitmap, 0, 0);
 
   // lines
 
-  ctx.lineWidth = config.lineWidth;
-  ctx.strokeStyle = config.textColor;
-
+  ctx.lineWidth = settings.lineWidth;
+  ctx.strokeStyle = settings.textColor;
   for (let i = sliceX; i < w; i += sliceX) {
     ctx.beginPath();
     ctx.moveTo(i, 0);
     ctx.lineTo(i, h);
-    // ctx.strokeStyle = config.textColor;
     ctx.stroke();
   }
 
@@ -79,17 +69,24 @@ function drawGrid(
 
   // text
 
-  ctx.strokeStyle = config.textColor;
-  ctx.fillStyle = config.textColor;
-  ctx.font = `italic bold ${config.textSize}px Tahoma`;
+  ctx.lineWidth = settings.textBorderWidth;
+  ctx.strokeStyle = settings.textBorderColor;
+  ctx.fillStyle = settings.textColor;
+  ctx.font = `italic bold ${settings.textSize}px Tahoma`;
 
   let count = 1;
   for (let j = 0; j < h; j += sliceY) {
     for (let i = 0; i < w; i += sliceX) {
+      settings.textBorderWidth &&
+        ctx.strokeText(
+          count.toString(),
+          i + settings.textOffsetX,
+          j + settings.textOffsetY
+        );
       ctx.fillText(
         count.toString(),
-        i + config.textOffsetX,
-        j + config.textOffsetY
+        i + settings.textOffsetX,
+        j + settings.textOffsetY
       );
 
       count++;

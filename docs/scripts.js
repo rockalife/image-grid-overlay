@@ -20500,6 +20500,31 @@ For more info, visit https://reactjs.org/link/mock-scheduler`);
 
   // src/components/imageUploader.tsx
   init_react_shim();
+
+  // src/utils/getImageSizes.ts
+  init_react_shim();
+  function isImageSize(obj) {
+    if (typeof obj !== "object" || obj === null) {
+      return false;
+    }
+    return typeof obj["width"] === "number" && typeof obj["height"] === "number";
+  }
+  async function getImageSizes(src) {
+    return new Promise((resolve, reject) => {
+      const image = new Image();
+      image.onload = function() {
+        if (isImageSize(this)) {
+          resolve({ width: this.width, height: this.height });
+        } else {
+          reject(new Error("image does not have width & height"));
+        }
+      };
+      image.onerror = reject;
+      image.src = src;
+    });
+  }
+
+  // src/components/imageUploader.tsx
   function ImageUploader({
     onImageUpload
   }) {
@@ -20510,11 +20535,18 @@ For more info, visit https://reactjs.org/link/mock-scheduler`);
     }, /* @__PURE__ */ React.createElement("input", {
       type: "file",
       accept: "image/*",
-      onChange: (e) => {
+      onChange: async (e) => {
         var _a;
-        const image = (_a = e.target.files) == null ? void 0 : _a[0];
-        if (image) {
-          onImageUpload(URL.createObjectURL(image));
+        const blob = (_a = e.target.files) == null ? void 0 : _a[0];
+        const bitmap = await createImageBitmap(blob);
+        const { width, height } = await getImageSizes(URL.createObjectURL(blob));
+        if (blob) {
+          onImageUpload({
+            width,
+            height,
+            blob,
+            bitmap
+          });
         }
       }
     })));
@@ -20523,40 +20555,35 @@ For more info, visit https://reactjs.org/link/mock-scheduler`);
   // src/components/canvas.tsx
   init_react_shim();
   var import_react = __toModule(require_react());
-  function Canvas({ bgImageUrl, config }) {
-    const imgRef = (0, import_react.useRef)(null);
+  function Canvas({ bgImage, settings }) {
     const canvasRef = (0, import_react.useRef)(null);
     (0, import_react.useEffect)(() => {
-      console.log(imgRef.current);
-      canvasRef.current && imgRef.current && drawGrid(canvasRef.current, config, imgRef.current);
-    }, [config]);
+      canvasRef.current && drawGrid(canvasRef.current, settings, bgImage.bitmap);
+    }, [settings]);
     return /* @__PURE__ */ React.createElement("div", {
       className: "canvas-wrapper"
     }, /* @__PURE__ */ React.createElement("canvas", {
       id: "canvas",
       ref: canvasRef,
-      width: config.imageWidth,
-      height: config.imageHeight
-    }), /* @__PURE__ */ React.createElement("img", {
-      ref: imgRef,
-      src: bgImageUrl
+      width: settings.imageWidth,
+      height: settings.imageHeight
     }));
   }
-  function drawGrid(canvas, config, bgImage) {
+  async function drawGrid(canvas, settings, bgImageBitmap) {
     var ctx = canvas.getContext("2d");
     const w = canvas.width;
     const h = canvas.height;
-    const sliceX = w / config.patternWidth * config.pageWidth;
-    const sliceY = h / config.patternHeight * config.pageHeight;
+    const sliceX = w / settings.patternWidth * settings.pageWidth;
+    const sliceY = h / settings.patternHeight * settings.pageHeight;
     console.log(w, h);
     console.log(sliceX, sliceY);
     if (!ctx) {
       return;
     }
     ctx.clearRect(0, 0, w, h);
-    ctx.drawImage(bgImage, 0, 0);
-    ctx.lineWidth = config.lineWidth;
-    ctx.strokeStyle = config.textColor;
+    ctx.drawImage(bgImageBitmap, 0, 0);
+    ctx.lineWidth = settings.lineWidth;
+    ctx.strokeStyle = settings.textColor;
     for (let i = sliceX; i < w; i += sliceX) {
       ctx.beginPath();
       ctx.moveTo(i, 0);
@@ -20569,13 +20596,15 @@ For more info, visit https://reactjs.org/link/mock-scheduler`);
       ctx.lineTo(w, j);
       ctx.stroke();
     }
-    ctx.strokeStyle = config.textColor;
-    ctx.fillStyle = config.textColor;
-    ctx.font = `italic bold ${config.textSize}px Tahoma`;
+    ctx.lineWidth = settings.textBorderWidth;
+    ctx.strokeStyle = settings.textBorderColor;
+    ctx.fillStyle = settings.textColor;
+    ctx.font = `italic bold ${settings.textSize}px Tahoma`;
     let count = 1;
     for (let j = 0; j < h; j += sliceY) {
       for (let i = 0; i < w; i += sliceX) {
-        ctx.fillText(count.toString(), i + config.textOffsetX, j + config.textOffsetY);
+        settings.textBorderWidth && ctx.strokeText(count.toString(), i + settings.textOffsetX, j + settings.textOffsetY);
+        ctx.fillText(count.toString(), i + settings.textOffsetX, j + settings.textOffsetY);
         count++;
       }
     }
@@ -20637,6 +20666,8 @@ For more info, visit https://reactjs.org/link/mock-scheduler`);
     lineWidth: 5,
     textSize: 32,
     textColor: "#ffffff",
+    textBorderWidth: 0,
+    textBorderColor: "#ffffff",
     textOffsetX: 30,
     textOffsetY: 30
   };
@@ -20650,10 +20681,12 @@ For more info, visit https://reactjs.org/link/mock-scheduler`);
     const lineWidthRef = (0, import_react3.useRef)(null);
     const textSizeRef = (0, import_react3.useRef)(null);
     const textColorRef = (0, import_react3.useRef)(null);
+    const textBorderWidthRef = (0, import_react3.useRef)(null);
+    const textBorderColorRef = (0, import_react3.useRef)(null);
     const textOffsetXRef = (0, import_react3.useRef)(null);
     const textOffsetYRef = (0, import_react3.useRef)(null);
     const handleChange = () => {
-      var _a, _b, _c, _d, _e, _f, _g, _h, _i, _j, _k, _l;
+      var _a, _b, _c, _d, _e, _f, _g, _h, _i, _j, _k, _l, _m, _n, _o;
       const data = {
         imageWidth: Number((_a = imageWidthRef.current) == null ? void 0 : _a.value),
         imageHeight: Number((_b = imageHeightRef.current) == null ? void 0 : _b.value),
@@ -20663,9 +20696,11 @@ For more info, visit https://reactjs.org/link/mock-scheduler`);
         pageHeight: Number((_f = pageHeightRef.current) == null ? void 0 : _f.value),
         textSize: Number((_g = textSizeRef.current) == null ? void 0 : _g.value),
         textColor: (_i = (_h = textColorRef.current) == null ? void 0 : _h.value) != null ? _i : defaultControls.textColor,
-        textOffsetX: Number((_j = textOffsetXRef.current) == null ? void 0 : _j.value),
-        textOffsetY: Number((_k = textOffsetYRef.current) == null ? void 0 : _k.value),
-        lineWidth: Number((_l = lineWidthRef.current) == null ? void 0 : _l.value)
+        textBorderWidth: Number((_j = textBorderWidthRef.current) == null ? void 0 : _j.value),
+        textBorderColor: (_l = (_k = textBorderColorRef.current) == null ? void 0 : _k.value) != null ? _l : defaultControls.textBorderColor,
+        textOffsetX: Number((_m = textOffsetXRef.current) == null ? void 0 : _m.value),
+        textOffsetY: Number((_n = textOffsetYRef.current) == null ? void 0 : _n.value),
+        lineWidth: Number((_o = lineWidthRef.current) == null ? void 0 : _o.value)
       };
       onChange == null ? void 0 : onChange(data);
     };
@@ -20760,6 +20795,24 @@ For more info, visit https://reactjs.org/link/mock-scheduler`);
       gap: 30
     }, /* @__PURE__ */ React.createElement("label", {
       className: "control"
+    }, /* @__PURE__ */ React.createElement("span", null, "Text border width"), /* @__PURE__ */ React.createElement("input", {
+      ref: textBorderWidthRef,
+      type: "number",
+      min: "0",
+      defaultValue: defaultControls.textBorderWidth,
+      onChange: handleChange
+    })), /* @__PURE__ */ React.createElement("label", {
+      className: "control"
+    }, /* @__PURE__ */ React.createElement("span", null, "Text border color"), /* @__PURE__ */ React.createElement("input", {
+      ref: textBorderColorRef,
+      type: "color",
+      defaultValue: defaultControls.textBorderColor,
+      onChange: handleChange
+    }))), /* @__PURE__ */ React.createElement(Stack, {
+      type: "horizontal",
+      gap: 30
+    }, /* @__PURE__ */ React.createElement("label", {
+      className: "control"
     }, /* @__PURE__ */ React.createElement("span", null, "Text offset X"), /* @__PURE__ */ React.createElement("input", {
       ref: textOffsetXRef,
       type: "number",
@@ -20793,19 +20846,19 @@ For more info, visit https://reactjs.org/link/mock-scheduler`);
 
   // src/components/app.tsx
   function App() {
-    const [imageUrl, setImageUrl] = (0, import_react4.useState)(null);
+    const [imageInfo, setImageInfo] = (0, import_react4.useState)(null);
     const [controls, setControls] = (0, import_react4.useState)(defaultControls);
-    console.log(imageUrl);
+    console.log(imageInfo);
     console.log(controls);
     return /* @__PURE__ */ React.createElement("div", {
       className: "app-container"
-    }, !imageUrl && /* @__PURE__ */ React.createElement(ImageUploader, {
-      onImageUpload: setImageUrl
-    }), imageUrl && /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement(Controls, {
+    }, !imageInfo && /* @__PURE__ */ React.createElement(ImageUploader, {
+      onImageUpload: setImageInfo
+    }), imageInfo && /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement(Controls, {
       onChange: setControls
     }), /* @__PURE__ */ React.createElement(Canvas, {
-      config: controls,
-      bgImageUrl: imageUrl
+      settings: controls,
+      bgImage: imageInfo
     })));
   }
 

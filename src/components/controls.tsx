@@ -1,14 +1,14 @@
 import { useRef } from "react";
-import type { Config } from "../types";
+import type { Settings } from "../types";
 import { Wrapper } from "./layout/wrapper";
 import { Stack } from "./layout/stack";
 import { downloadImage } from "../utils/downloadImage";
 
 interface ControlsProps {
-  onChange?: (controls: Config) => void;
+  onChange?: (controls: Settings) => void;
 }
 
-export const defaultControls: Config = {
+export const defaultControls: Settings = {
   imageWidth: 6300,
   imageHeight: 5775,
   patternWidth: 300,
@@ -18,6 +18,8 @@ export const defaultControls: Config = {
   lineWidth: 5,
   textSize: 32,
   textColor: "#ffffff",
+  textBorderWidth: 0,
+  textBorderColor: "#ffffff",
   textOffsetX: 30,
   textOffsetY: 30,
 };
@@ -32,11 +34,13 @@ export function Controls({ onChange }: ControlsProps) {
   const lineWidthRef = useRef<HTMLInputElement>(null);
   const textSizeRef = useRef<HTMLInputElement>(null);
   const textColorRef = useRef<HTMLInputElement>(null);
+  const textBorderWidthRef = useRef<HTMLInputElement>(null);
+  const textBorderColorRef = useRef<HTMLInputElement>(null);
   const textOffsetXRef = useRef<HTMLInputElement>(null);
   const textOffsetYRef = useRef<HTMLInputElement>(null);
 
   const handleChange = () => {
-    const data: Config = {
+    const data: Settings = {
       imageWidth: Number(imageWidthRef.current?.value),
       imageHeight: Number(imageHeightRef.current?.value),
       patternWidth: Number(patternWidthRef.current?.value),
@@ -45,6 +49,9 @@ export function Controls({ onChange }: ControlsProps) {
       pageHeight: Number(pageHeightRef.current?.value),
       textSize: Number(textSizeRef.current?.value),
       textColor: textColorRef.current?.value ?? defaultControls.textColor,
+      textBorderWidth: Number(textBorderWidthRef.current?.value),
+      textBorderColor:
+        textBorderColorRef.current?.value ?? defaultControls.textBorderColor,
       textOffsetX: Number(textOffsetXRef.current?.value),
       textOffsetY: Number(textOffsetYRef.current?.value),
       lineWidth: Number(lineWidthRef.current?.value),
@@ -143,6 +150,27 @@ export function Controls({ onChange }: ControlsProps) {
                   ref={textColorRef}
                   type="color"
                   defaultValue={defaultControls.textColor}
+                  onChange={handleChange}
+                />
+              </label>
+            </Stack>
+            <Stack type="horizontal" gap={30}>
+              <label className="control">
+                <span>Text border width</span>
+                <input
+                  ref={textBorderWidthRef}
+                  type="number"
+                  min="0"
+                  defaultValue={defaultControls.textBorderWidth}
+                  onChange={handleChange}
+                />
+              </label>
+              <label className="control">
+                <span>Text border color</span>
+                <input
+                  ref={textBorderColorRef}
+                  type="color"
+                  defaultValue={defaultControls.textBorderColor}
                   onChange={handleChange}
                 />
               </label>

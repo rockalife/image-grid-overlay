@@ -1,7 +1,9 @@
 import type { ReactElement } from "react";
+import type { ImageInfo } from "../types";
+import { getImageSizes } from "../utils/getImageSizes";
 
 interface ImageUploaderProps {
-  onImageUpload: (url: string) => void;
+  onImageUpload: (image: ImageInfo) => void;
 }
 
 export function ImageUploader({
@@ -13,11 +15,20 @@ export function ImageUploader({
         <input
           type="file"
           accept="image/*"
-          onChange={(e) => {
-            const image = e.target.files?.[0];
+          onChange={async (e) => {
+            const blob: Blob = e.target.files?.[0];
+            const bitmap = await createImageBitmap(blob);
+            const { width, height } = await getImageSizes(
+              URL.createObjectURL(blob)
+            );
 
-            if (image) {
-              onImageUpload(URL.createObjectURL(image));
+            if (blob) {
+              onImageUpload({
+                width,
+                height,
+                blob,
+                bitmap,
+              });
             }
           }}
         />
