@@ -72,7 +72,7 @@ async function drawGrid(
   ctx.lineWidth = settings.textBorderWidth;
   ctx.strokeStyle = settings.textBorderColor;
   ctx.fillStyle = settings.textColor;
-  ctx.font = `italic bold ${settings.textSize}px Tahoma`;
+  ctx.font = `bold ${settings.textSize}px Tahoma`;
 
   let count = 1;
   for (let j = 0; j < h; j += sliceY) {
