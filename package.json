@@ -15,7 +15,7 @@
     "@types/react": "^17.0.27",
     "@types/react-dom": "^17.0.9",
     "classnames": "^2.3.1",
-    "esbuild": "^0.13.4",
-    "typescript": "^4.4.3"
+    "esbuild": "^0.14.18",
+    "typescript": "^4.5.5"
   }
 }

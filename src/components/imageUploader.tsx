@@ -16,13 +16,14 @@ export function ImageUploader({
           type="file"
           accept="image/*"
           onChange={async (e) => {
-            const blob: Blob = e.target.files?.[0];
-            const bitmap = await createImageBitmap(blob);
-            const { width, height } = await getImageSizes(
-              URL.createObjectURL(blob)
-            );
+            const blob = e.target.files?.[0];
 
             if (blob) {
+              const bitmap = await createImageBitmap(blob);
+              const { width, height } = await getImageSizes(
+                URL.createObjectURL(blob)
+              );
+
               onImageUpload({
                 width,
                 height,

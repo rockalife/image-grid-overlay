@@ -1,5 +1,6 @@
 import { useEffect, useRef } from "react";
 import { Settings, ImageInfo } from "../types";
+import { pageStitchesOverlay } from "./config";
 
 interface CanvasProps {
   bgImage: ImageInfo;
@@ -33,11 +34,10 @@ async function drawGrid(
   var ctx = canvas.getContext("2d");
   const w = canvas.width;
   const h = canvas.height;
-  const sliceX = (w / settings.patternWidth) * settings.pageWidth;
-  const sliceY = (h / settings.patternHeight) * settings.pageHeight;
-
-  console.log(w, h);
-  console.log(sliceX, sliceY);
+  const pxPerStitchW = w / settings.patternWidth;
+  const pxPerStitchH = h / settings.patternHeight;
+  const pageStitchesW = settings.pageWidth;
+  const pageStitchesH = settings.pageHeight;
 
   if (!ctx) {
     return;
@@ -53,14 +53,22 @@ async function drawGrid(
 
   ctx.lineWidth = settings.lineWidth;
   ctx.strokeStyle = settings.textColor;
-  for (let i = sliceX; i < w; i += sliceX) {
+  for (
+    let i = pageStitchesW * pxPerStitchW;
+    i < w;
+    i += (pageStitchesW - pageStitchesOverlay) * pxPerStitchW
+  ) {
     ctx.beginPath();
     ctx.moveTo(i, 0);
     ctx.lineTo(i, h);
     ctx.stroke();
   }
 
-  for (let j = sliceY; j < h; j += sliceY) {
+  for (
+    let j = pageStitchesH * pxPerStitchH;
+    j < h;
+    j += (pageStitchesH - pageStitchesOverlay) * pxPerStitchH
+  ) {
     ctx.beginPath();
     ctx.moveTo(0, j);
     ctx.lineTo(w, j);
@@ -75,8 +83,16 @@ async function drawGrid(
   ctx.font = `bold ${settings.textSize}px Tahoma`;
 
   let count = 1;
-  for (let j = 0; j < h; j += sliceY) {
-    for (let i = 0; i < w; i += sliceX) {
+  for (
+    let j = 0;
+    j < h;
+    j += (pageStitchesH - (j === 0 ? 0 : pageStitchesOverlay)) * pxPerStitchH
+  ) {
+    for (
+      let i = 0;
+      i < w;
+      i += (pageStitchesW - (i === 0 ? 0 : pageStitchesOverlay)) * pxPerStitchW
+    ) {
       settings.textBorderWidth &&
         ctx.strokeText(
           count.toString(),

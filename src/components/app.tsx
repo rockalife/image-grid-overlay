@@ -1,23 +1,33 @@
-import type { ReactElement } from "react";
-import { useState } from "react";
+import type { Settings, ImageInfo } from "../types";
+import { useEffect, useState } from "react";
 import { ImageUploader } from "./imageUploader";
 import { Canvas } from "./canvas";
-import type { Settings, ImageInfo } from "../types";
-import { Controls, defaultControls } from "./controls";
+import { Controls } from "./controls";
+import { defaultSettings } from "./config";
 
 export function App() {
-  const [imageInfo, setImageInfo] = useState<ImageInfo | null>(null);
-  const [controls, setControls] = useState<Settings>(defaultControls);
+  const [imageInfo, setImageInfo] = useState<ImageInfo>();
+  const [controls, setControls] = useState<Settings>();
 
   console.log(imageInfo);
   console.log(controls);
 
+  useEffect(() => {
+    if (imageInfo) {
+      setControls({
+        ...defaultSettings,
+        imageWidth: imageInfo.width,
+        imageHeight: imageInfo.height,
+      });
+    }
+  }, [imageInfo]);
+
   return (
     <div className="app-container">
       {!imageInfo && <ImageUploader onImageUpload={setImageInfo} />}
-      {imageInfo && (
+      {imageInfo && controls && (
         <>
-          <Controls onChange={setControls} />
+          <Controls initialValue={controls} onChange={setControls} />
           <Canvas settings={controls} bgImage={imageInfo} />
         </>
       )}

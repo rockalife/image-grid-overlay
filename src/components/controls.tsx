@@ -5,26 +5,11 @@ import { Stack } from "./layout/stack";
 import { downloadImage } from "../utils/downloadImage";
 
 interface ControlsProps {
-  onChange?: (controls: Settings) => void;
+  initialValue: Settings;
+  onChange: (controls: Settings) => void;
 }
 
-export const defaultControls: Settings = {
-  imageWidth: 6300,
-  imageHeight: 5775,
-  patternWidth: 300,
-  patternHeight: 275,
-  pageWidth: 50,
-  pageHeight: 69,
-  lineWidth: 5,
-  textSize: 32,
-  textColor: "#ffffff",
-  textBorderWidth: 0,
-  textBorderColor: "#ffffff",
-  textOffsetX: 30,
-  textOffsetY: 30,
-};
-
-export function Controls({ onChange }: ControlsProps) {
+export function Controls({ initialValue, onChange }: ControlsProps) {
   const imageWidthRef = useRef<HTMLInputElement>(null);
   const imageHeightRef = useRef<HTMLInputElement>(null);
   const patternWidthRef = useRef<HTMLInputElement>(null);
@@ -48,10 +33,10 @@ export function Controls({ onChange }: ControlsProps) {
       pageWidth: Number(pageWidthRef.current?.value),
       pageHeight: Number(pageHeightRef.current?.value),
       textSize: Number(textSizeRef.current?.value),
-      textColor: textColorRef.current?.value ?? defaultControls.textColor,
+      textColor: textColorRef.current?.value ?? initialValue.textColor,
       textBorderWidth: Number(textBorderWidthRef.current?.value),
       textBorderColor:
-        textBorderColorRef.current?.value ?? defaultControls.textBorderColor,
+        textBorderColorRef.current?.value ?? initialValue.textBorderColor,
       textOffsetX: Number(textOffsetXRef.current?.value),
       textOffsetY: Number(textOffsetYRef.current?.value),
       lineWidth: Number(lineWidthRef.current?.value),
@@ -72,7 +57,7 @@ export function Controls({ onChange }: ControlsProps) {
                   ref={imageWidthRef}
                   type="number"
                   min="0"
-                  defaultValue={defaultControls.imageWidth}
+                  defaultValue={initialValue.imageWidth}
                   onChange={handleChange}
                 />
               </label>
@@ -82,7 +67,7 @@ export function Controls({ onChange }: ControlsProps) {
                   ref={imageHeightRef}
                   type="number"
                   max="0"
-                  defaultValue={defaultControls.imageHeight}
+                  defaultValue={initialValue.imageHeight}
                   onChange={handleChange}
                 />
               </label>
@@ -94,7 +79,7 @@ export function Controls({ onChange }: ControlsProps) {
                   ref={patternWidthRef}
                   type="number"
                   min="0"
-                  defaultValue={defaultControls.patternWidth}
+                  defaultValue={initialValue.patternWidth}
                   onChange={handleChange}
                 />
               </label>
@@ -104,7 +89,7 @@ export function Controls({ onChange }: ControlsProps) {
                   ref={patternHeightRef}
                   type="number"
                   max="0"
-                  defaultValue={defaultControls.patternHeight}
+                  defaultValue={initialValue.patternHeight}
                   onChange={handleChange}
                 />
               </label>
@@ -116,7 +101,7 @@ export function Controls({ onChange }: ControlsProps) {
                   ref={pageWidthRef}
                   type="number"
                   min="0"
-                  defaultValue={defaultControls.pageWidth}
+                  defaultValue={initialValue.pageWidth}
                   onChange={handleChange}
                 />
               </label>
@@ -126,7 +111,7 @@ export function Controls({ onChange }: ControlsProps) {
                   ref={pageHeightRef}
                   type="number"
                   max="0"
-                  defaultValue={defaultControls.pageHeight}
+                  defaultValue={initialValue.pageHeight}
                   onChange={handleChange}
                 />
               </label>
@@ -140,7 +125,7 @@ export function Controls({ onChange }: ControlsProps) {
                   ref={textSizeRef}
                   type="number"
                   min="0"
-                  defaultValue={defaultControls.textSize}
+                  defaultValue={initialValue.textSize}
                   onChange={handleChange}
                 />
               </label>
@@ -149,7 +134,7 @@ export function Controls({ onChange }: ControlsProps) {
                 <input
                   ref={textColorRef}
                   type="color"
-                  defaultValue={defaultControls.textColor}
+                  defaultValue={initialValue.textColor}
                   onChange={handleChange}
                 />
               </label>
@@ -161,7 +146,7 @@ export function Controls({ onChange }: ControlsProps) {
                   ref={textBorderWidthRef}
                   type="number"
                   min="0"
-                  defaultValue={defaultControls.textBorderWidth}
+                  defaultValue={initialValue.textBorderWidth}
                   onChange={handleChange}
                 />
               </label>
@@ -170,7 +155,7 @@ export function Controls({ onChange }: ControlsProps) {
                 <input
                   ref={textBorderColorRef}
                   type="color"
-                  defaultValue={defaultControls.textBorderColor}
+                  defaultValue={initialValue.textBorderColor}
                   onChange={handleChange}
                 />
               </label>
@@ -182,7 +167,7 @@ export function Controls({ onChange }: ControlsProps) {
                   ref={textOffsetXRef}
                   type="number"
                   min="0"
-                  defaultValue={defaultControls.textOffsetX}
+                  defaultValue={initialValue.textOffsetX}
                   onChange={handleChange}
                 />
               </label>
@@ -192,7 +177,7 @@ export function Controls({ onChange }: ControlsProps) {
                   ref={textOffsetYRef}
                   type="number"
                   min="0"
-                  defaultValue={defaultControls.textOffsetY}
+                  defaultValue={initialValue.textOffsetY}
                   onChange={handleChange}
                 />
               </label>
@@ -205,7 +190,7 @@ export function Controls({ onChange }: ControlsProps) {
                   type="number"
                   min="1"
                   max="50"
-                  defaultValue={defaultControls.lineWidth}
+                  defaultValue={initialValue.lineWidth}
                   onChange={handleChange}
                 />
               </label>
